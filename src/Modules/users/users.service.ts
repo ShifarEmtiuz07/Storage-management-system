@@ -1,26 +1,96 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './entities/user.entity';
+import { Repository } from 'typeorm';
+import * as bcrypt from 'bcryptjs';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+
+   constructor(@InjectRepository(User) private readonly userRepo: Repository<User>) {}
+
+    async register(createUserDto: CreateUserDto) {
+    try {
+      const salt = bcrypt.genSaltSync(10);
+      const password_hash = bcrypt.hashSync(createUserDto.password, salt);
+      const user = await this.userRepo.create({ ...createUserDto, password_hash });
+    
+     const savedUser= await this.userRepo.save(user);
+    
+      return {
+        statusCode: 201,
+        message: 'Registration successful',
+        data: savedUser
+      };
+    } catch (error) {
+      throw new InternalServerErrorException('User register error: ' + error.message);
+    }
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll() {
+    try {
+      const users = await this.userRepo.find();
+      return {
+        statusCode: 200,
+        message: 'Users retrieved successfully',
+        data: plainToInstance(User, users),
+      };
+    } catch (error) {
+      throw new InternalServerErrorException('User retrieve error: ' + error.message);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    try {
+      const user = await this.userRepo.findOne({ where: { id: id } });
+      if (!user) {
+        throw new NotFoundException(`User with id:${id} not found`);
+      }
+      return {
+        statusCode: 200,
+        message: `User with id:${id} retrieved successfully`,
+        user: plainToInstance(User, user),
+      };
+    } catch (error) {
+      throw new InternalServerErrorException('Single user retrieve error: ' + error.message);
+    }
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+    async update(id: number, updateUsertDto: UpdateUserDto) {
+    try {
+      const user = await this.userRepo.findOne({ where: { id: id } });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      Object.assign(user, updateUsertDto);
+
+      await this.userRepo.save(user);
+
+      return {
+        statusCode: 200,
+        message: 'User updated successful',
+         data: plainToInstance(User, user),
+      };
+    } catch (error) {
+      throw new InternalServerErrorException('Single user retrieve error: ' + error.message);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+
+async  remove(id: number) {
+     const user = await this.userRepo.findOne({ where: { id: id } });
+      if (!user) {
+        throw new NotFoundException(`User with id:${id} not found`);
+      }
+      await this.userRepo.remove(user);
+     return {
+        statusCode: 200,
+        message: `User with id:${id} deleted successfully`,
+       
+      };
   }
 }

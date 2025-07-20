@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Exclude } from 'class-transformer';
+import { Folder } from 'src/Modules/folders/entities/folder.entity';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 
-@Entity('users')
-
+@Entity()
 export class User {
 
   @PrimaryGeneratedColumn()
@@ -10,15 +11,43 @@ export class User {
   @Column()
   username: string;
 
-  @Column({ unique: true })
+  @Column()  //{unique: true}
   email: string;
 
+  @Exclude()
   @Column({ nullable: true })
-  password: string;
+  password_hash: string;
 
   @Column({ default: 0 })
   storage_used: number;
 
+  @Column({ default: 15 })
+  total_storage: number;
+
   @Column({ nullable: true })
   pin_code: string;
+
+  @Column({ nullable: true })
+  userImage: string;
+
+  @Column({ nullable: true,type:'boolean' })
+   termsConditions?: boolean;
+
+    @CreateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  })
+  public created_at: Date;
+
+  @UpdateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+    onUpdate: 'CURRENT_TIMESTAMP(6)',
+  })
+  public updated_at: Date;
+
+ @OneToMany(()=>Folder,(folder)=>folder.user)
+ folders:Folder[]
+
+
 }

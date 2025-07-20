@@ -1,4 +1,4 @@
-import { IsBoolean, IsEmail, IsString } from "class-validator";
+import { IsBoolean, IsEmail, IsOptional, IsString } from "class-validator";
 
 
 export class CreateUserDto {
@@ -17,4 +17,8 @@ export class CreateUserDto {
 
     @IsBoolean({ message: 'Terms and conditions must be a boolean' })
     termsConditions?: boolean;
+
+  @IsOptional()  
+  @IsString()
+  userImage: string;
 }
