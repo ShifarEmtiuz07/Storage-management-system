@@ -38,12 +38,28 @@ async  create(createFolderDto: CreateFolderDto,req) {
     
   }
 
-async  findAll() {
+async  findAll(searchTerm:string,req) {
     try{
-      const folders =await this.folderRepo.find();
-      if(!folders || folders.length === 0) {
-        throw new NotFoundException('No folders found');
-      }
+
+       const user = await this.userRepo.findOne({ where: { id:  req.user.id } });
+       if (!user) throw new NotFoundException('User not found');
+
+      const qb= await this.folderRepo.createQueryBuilder('folders')
+                 .select('folders.id','id')
+                .addSelect('folders.name','name')
+                .addSelect('folders.created_at','created_at')
+                .leftJoin('folders.user','user')
+                .where('user.id = :userId', { userId:user.id })
+
+
+                if(searchTerm){
+                  qb.andWhere('folders.name =:searchTerm',{searchTerm})
+                }
+               
+             const folders=await qb.getRawMany();
+
+                //console.log(folders)
+      
       return {
         statusCode: 200,
         message: 'Folders retrieved successfully',
@@ -54,16 +70,38 @@ async  findAll() {
   }
 }
 
-async  findOne(id: number) {
+async  findOneFolderAllFiles(folderId: number,req) {
      try{
-      const folder =await this.folderRepo.findOne({where: { id }});
-      if(!folder) {
-        throw new NotFoundException('No folder found');
+      //console.log(folderId);  
+       const user = await this.userRepo.findOne({ where: { id: req.user.id } });
+       console.log(user);
+    if (!user) throw new NotFoundException('User not found');
+
+
+
+      const folders = await this.folderRepo
+    .createQueryBuilder('folder')
+    .leftJoin('folder.files', 'files')
+    .leftJoin('folder.user', 'user')
+    .select('files.name', 'fileName')
+    .addSelect('files.type', 'type')
+    .addSelect('files.path', 'path') 
+    
+    .addSelect('files.isFavorite', 'isFavorite')    
+    .addSelect('files.created_at', 'created_at') 
+    .where('user.id = :userId', { userId:user.id })
+    .andWhere('folder.id = :folderId', { folderId })
+    .getRawMany();
+
+
+      if (!folders || folders.length === 0) {
+        throw new NotFoundException('No folder found with the given ID');
       }
+
       return {
         statusCode: 200,
-        message: 'Folder retrieved successfully',
-        data: folder
+        message: 'Files are retrieved successfully',
+        data: folders
       };
   }catch (error) {
         throw new InternalServerErrorException('Error retrieving folder: ' + error.message); 

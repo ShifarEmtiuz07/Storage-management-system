@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, BadRequestException, UseGuards, Req, ParseFilePipeBuilder, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, BadRequestException, UseGuards, Req, ParseFilePipeBuilder, HttpStatus, Query } from '@nestjs/common';
 import { FilesUploadService } from './files-upload.service';
 import { CreateFilesUploadDto } from './dto/create-files-upload.dto';
 import { UpdateFilesUploadDto } from './dto/update-files-upload.dto';
@@ -7,7 +7,7 @@ import * as fs from 'fs-extra';
 import { extname } from 'path';
 import { AuthGuard } from '../auth/auth.guard';
 
-@Controller('files-upload')
+@Controller('files')
 export class FilesUploadController {
   constructor(private readonly filesUploadService: FilesUploadService) {}
 
@@ -43,7 +43,7 @@ export class FilesUploadController {
        filePath,
       folderId,
        ext,
-       req.user.id 
+       req.user.sub
     );
   }
 
@@ -80,7 +80,7 @@ export class FilesUploadController {
        filePath,
       folderId,
        ext,
-       req.user.id 
+       req.user.sub 
     );
   }
 
@@ -114,21 +114,122 @@ export class FilesUploadController {
        filePath,
       folderId,
        ext,
-       req.user.id 
+       req.user.sub 
     );
   }
 
 
-
-  @Post()
-  create(@Body() createFilesUploadDto: CreateFilesUploadDto) {
-    return this.filesUploadService.create(createFilesUploadDto);
+  @UseGuards(AuthGuard)
+  @Post('rename')
+  renameFile(@Body() body ) {
+    const{fileId,newName }= body;
+    return this.filesUploadService.renameFile(fileId,newName);
   }
 
-  @Get()
-  findAll() {
-    return this.filesUploadService.findAll();
+   @UseGuards(AuthGuard)
+  @Post('copy-file')
+  copyFileToFolder(@Body() body ) {
+    const{fileId,targetFolderId }= body;
+    return this.filesUploadService.copyFileToFolder(fileId,targetFolderId);
   }
+
+  
+   @UseGuards(AuthGuard)
+  @Post('duplicate-file/:id')
+  duplicateFile(@Param ('id') id:string ) {
+    
+    return this.filesUploadService.duplicateFile(+id);
+  }
+
+
+  @UseGuards(AuthGuard)
+  @Post('favorite/:id')
+  makeFavorite(@Param ('id') id:string, @Req() req) {
+    
+    return this.filesUploadService.makeFavorite(+id, req.user.sub);
+  }
+
+  
+  @UseGuards(AuthGuard)
+  @Post('unfavorite/:id')
+  makeUnFavorite(@Param ('id') id:string, @Req() req) {
+    
+    return this.filesUploadService.makeUnFavorite(+id, req.user.sub);
+  }
+
+
+  
+  @UseGuards(AuthGuard)
+  @Get('favorite-files')
+  findFavoriteFiles(@Query('searchTerm') searchTerm:string, @Req() req) {
+    
+    return this.filesUploadService.findFavoriteFiles(searchTerm,req.user.sub);
+  }
+
+
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.filesUploadService.remove(+id);
+  }
+
+
+  @UseGuards(AuthGuard)
+  @Get('notes')
+  findAllNotes(@Query('searchTerm') searchTerm:string,@Req() req) {
+    return this.filesUploadService.findAllNotes(searchTerm,req);
+  }
+
+   @UseGuards(AuthGuard)
+  @Get('images')
+  findAllImages(@Query('searchTerm') searchTerm:string,@Req() req) {
+    return this.filesUploadService.findAllImages(searchTerm,req);
+  }
+
+
+   @UseGuards(AuthGuard)
+  @Get('pdfs')
+  findAllPdfs(@Query('searchTerm') searchTerm:string,@Req() req) {
+    return this.filesUploadService.findAllPdfs(searchTerm,req);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('make-private')
+  makeFilePrivate(@Body() body,@Req() req ) {
+    const{fileId,pin }= body;
+    return this.filesUploadService.makeFilePrivate(fileId,pin,req.user.sub);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('private')
+  findPrivateFiles(@Body() body,@Req() req ) {
+    
+    return this.filesUploadService.findPrivateFiles(body.pin,req.user.sub);
+  }
+
+    @UseGuards(AuthGuard)
+  @Get('date-filtered-files')
+ getRecentFiles(@Req() req,   
+  @Query('date') date?: string,
+) {
+
+        const parseDate = (dateString: string | undefined): Date | undefined => {
+      if (!dateString) return undefined;
+      const date = new Date(dateString);
+
+      if (isNaN(date.getTime()))
+        throw new BadRequestException(`Invalid date format: ${dateString}`);
+      return date;
+    };
+
+    const parsedDate = parseDate(date);
+    
+
+  return this.filesUploadService.dateFilteredFiles(req, parsedDate);
+}
+
+
+
 
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -140,8 +241,5 @@ export class FilesUploadController {
     return this.filesUploadService.update(+id, updateFilesUploadDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.filesUploadService.remove(+id);
-  }
+
 }

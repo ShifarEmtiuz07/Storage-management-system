@@ -21,8 +21,8 @@ export class HomeController {
   }
   @UseGuards(AuthGuard)
   @Get('folders/stats')
- getFolderStats(@Req() req) {
-  return this.homeService.getFoldersWithStats(req);
+ getFoldersWithItems(@Req() req) {
+  return this.homeService.getFoldersWithItems(req);
 }
 
   @UseGuards(AuthGuard)
@@ -31,6 +31,7 @@ export class HomeController {
   return this.homeService.getRecentFiles(req);
 }
 
+ 
 
   @Get()
   findAll() {

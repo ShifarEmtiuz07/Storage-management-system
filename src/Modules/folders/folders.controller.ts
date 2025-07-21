@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Query } from '@nestjs/common';
 import { FoldersService } from './folders.service';
 import { CreateFolderDto } from './dto/create-folder.dto';
 import { UpdateFolderDto } from './dto/update-folder.dto';
@@ -15,14 +15,16 @@ export class FoldersController {
     return this.foldersService.create(createFolderDto,req);
   }
 
+  @UseGuards(AuthGuard)
   @Get()
-  findAll() {
-    return this.foldersService.findAll();
+  findAll(@Query('searchTerm') searchTerm:string,@Req() req) {
+    return this.foldersService.findAll(searchTerm,req);
   }
 
+  @UseGuards(AuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.foldersService.findOne(+id);
+  findOne(@Param('id') id: string,@Req() req) {
+    return this.foldersService.findOneFolderAllFiles(+id,req);
   }
 
   @Patch(':id')

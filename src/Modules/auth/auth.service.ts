@@ -96,7 +96,29 @@ async verifyOtp({ email, otp }: VerifyOtpDto) {
     return { message: 'Password reset successfully' };
   }
 
+async setPin(dto,userId) {  //userId: number, pin: string, password:string
+  const user = await this.userRepo.findOne({ where: { id: userId } });
+  if (!user) throw new NotFoundException('User not found'); 
 
+
+
+
+  const isValid = await bcrypt.compare(dto.password, user.password_hash);
+  if (!isValid) throw new UnauthorizedException('Invalid password');
+
+   const salt = bcrypt.genSaltSync(10);
+   const pin_hash = bcrypt.hashSync(dto.pin, salt);
+
+  user.pin_code = pin_hash;
+  await this.userRepo.save(user);
+ 
+         return {
+        statusCode: 200,
+        message: 'Pin set successfully' ,
+       
+      };
+
+}
 
 
 

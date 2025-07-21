@@ -8,6 +8,7 @@ import { Files } from '../files-upload/entities/files-upload.entity';
 import { User } from '../users/entities/user.entity';
 import { FilesUploadService } from '../files-upload/files-upload.service';
 
+
 @Injectable()
 export class HomeService {
 
@@ -35,7 +36,7 @@ export class HomeService {
 
 
          return {
-        statusCode: 201,
+        statusCode: 200,
         message: 'Profile storage retrieved successful',
         data: {totalStorageGB,totalUsed,availableGB}
       };
@@ -47,8 +48,10 @@ export class HomeService {
  }
 
 
- async getFoldersWithStats(req) {
-    const user = await this.userRepo.findOne({ where: { id:  req.user.id } });
+ async getFoldersWithItems(req) {
+   try{
+
+     const user = await this.userRepo.findOne({ where: { id:  req.user.id } });
     
     if (!user) throw new NotFoundException('User not found');
   const folders = await this.folderRepo
@@ -63,21 +66,26 @@ export class HomeService {
     .groupBy('folder.id')
     .getRawMany();
 
-  // Convert size to GB or MB if needed
+ 
   return folders.map(f => ({
     id: f.id,
     name: f.name,
     totalItem: Number(f.totalItems),
-    storageInGB: +(Number(f.size) / (1024 ** 3)).toFixed(2),
-    //sizeInBytes: Number(f.size),
-   
-    //sizeInMB: +(Number(f.size) / (1024 ** 2)).toFixed(2),
+    storageInGB: +(Number(f.size) / (1024 ** 3)).toFixed(4),        /////////Convert Byte to GB//
+    sizeInBytes: Number(f.size),
+    sizeInMB: +(Number(f.size) / (1024 ** 2)).toFixed(2),         /////////Convert Byte to MB//
   }));
+
+   }catch(error){
+    throw new InternalServerErrorException('Folders with items retrieve error: '+error.message)
+   }
 }
 
 async getRecentFiles(req){
 
-      const user = await this.userRepo.findOne({ where: { id:  req.user.id } });
+  try{
+
+    const user = await this.userRepo.findOne({ where: { id:  req.user.id } });
       //console.log(user);
     
     if (!user) throw new NotFoundException('User not found');
@@ -100,10 +108,22 @@ async getRecentFiles(req){
             .andWhere(dateWhereClause)
             .getRawMany();
 
-            console.log(qb);
-            return qb;
+            // console.log(qb);
+                
+            return {
+        statusCode: 200,
+        message: 'Recent files retrieved successful',
+        data: qb
+      };
+
+  }catch(error){
+    throw new InternalServerErrorException('Recent files retrieve error: '+error.message)
+  }
+
+      
 
 }
+
 
 
 
