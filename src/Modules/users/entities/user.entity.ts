@@ -1,4 +1,5 @@
 import { Exclude } from 'class-transformer';
+import { Files } from 'src/Modules/files-upload/entities/files-upload.entity';
 import { Folder } from 'src/Modules/folders/entities/folder.entity';
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 
@@ -48,6 +49,10 @@ export class User {
 
  @OneToMany(()=>Folder,(folder)=>folder.user)
  folders:Folder[]
+
+  @OneToMany(()=>Files,(files)=>files.user)
+ files:Files[]
+
 
 
 }

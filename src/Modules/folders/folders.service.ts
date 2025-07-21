@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateFolderDto } from './dto/create-folder.dto';
 import { UpdateFolderDto } from './dto/update-folder.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Folder } from './entities/folder.entity';
 import { Repository } from 'typeorm';
 import { Files } from '../files-upload/entities/files-upload.entity';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class FoldersService {
@@ -14,32 +15,97 @@ export class FoldersService {
     private folderRepo: Repository<Folder>,
     @InjectRepository(Files)
     private fileRepo: Repository<Files>,
+     @InjectRepository(User)
+    private userRepo: Repository<User>,
   ) {}
-  create(createFolderDto: CreateFolderDto) {
+async  create(createFolderDto: CreateFolderDto,req) {
     try{
 
-    const folder = this.folderRepo.create(createFolderDto);
-    return this.folderRepo.save(folder);
+        const user = await this.userRepo.findOne({ where: { id:  req.user.id } });
+       if (!user) throw new NotFoundException('User not found');
 
-    }catch(error){
+    const folder =await this.folderRepo.create({...createFolderDto,user});
+    const savedFolder=await this.folderRepo.save(folder);
 
-    }
+     return {
+          statusCode: 201,
+          message: `${savedFolder.name} folder created successfully`,
+          data: savedFolder
+        };
+      } catch (error) {
+        throw new InternalServerErrorException('Folder creation error: ' + error.message);
+      }
     
   }
 
-  findAll() {
-    return `This action returns all folders`;
+async  findAll() {
+    try{
+      const folders =await this.folderRepo.find();
+      if(!folders || folders.length === 0) {
+        throw new NotFoundException('No folders found');
+      }
+      return {
+        statusCode: 200,
+        message: 'Folders retrieved successfully',
+        data: folders
+      };
+  }catch (error) {
+        throw new InternalServerErrorException('Error retrieving folders: ' + error.message); 
+  }
+}
+
+async  findOne(id: number) {
+     try{
+      const folder =await this.folderRepo.findOne({where: { id }});
+      if(!folder) {
+        throw new NotFoundException('No folder found');
+      }
+      return {
+        statusCode: 200,
+        message: 'Folder retrieved successfully',
+        data: folder
+      };
+  }catch (error) {
+        throw new InternalServerErrorException('Error retrieving folder: ' + error.message); 
+  }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} folder`;
+ async update(id: number, updateFolderDto: UpdateFolderDto) {
+
+    try{
+      const folder =await this.folderRepo.findOne({where: { id }});
+      if(!folder) {
+        throw new NotFoundException('No folder found');
+      }
+
+      Object.assign(folder, updateFolderDto);
+      return {
+        statusCode: 200,
+        message: 'Folder updated successfully',
+        data: folder
+      };
+  }catch (error) {
+        throw new InternalServerErrorException('Error updating folder: ' + error.message); 
+  }
   }
 
-  update(id: number, updateFolderDto: UpdateFolderDto) {
-    return `This action updates a #${id} folder`;
-  }
+async  remove(id: number) {
 
-  remove(id: number) {
-    return `This action removes a #${id} folder`;
+
+    try{
+      const folder =await this.folderRepo.findOne({where: { id }});
+      if(!folder) {
+        throw new NotFoundException('No folder found');
+      }
+
+      await this.folderRepo.remove(folder);
+      return {
+        statusCode: 200,
+        message: 'Folder deleted successfully',
+       
+      };
+    } catch (error) {
+        throw new InternalServerErrorException('Error deleting folder: ' + error.message); 
+    }
   }
 }

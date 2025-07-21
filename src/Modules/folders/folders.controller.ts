@@ -1,15 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { FoldersService } from './folders.service';
 import { CreateFolderDto } from './dto/create-folder.dto';
 import { UpdateFolderDto } from './dto/update-folder.dto';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('folders')
 export class FoldersController {
   constructor(private readonly foldersService: FoldersService) {}
 
+   @UseGuards(AuthGuard)
   @Post()
-  create(@Body() createFolderDto: CreateFolderDto) {
-    return this.foldersService.create(createFolderDto);
+  create(@Body() createFolderDto: CreateFolderDto,@Req() req) {
+    
+    return this.foldersService.create(createFolderDto,req);
   }
 
   @Get()
