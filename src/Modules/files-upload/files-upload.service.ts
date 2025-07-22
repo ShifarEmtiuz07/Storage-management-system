@@ -16,51 +16,51 @@ import * as bcrypt from 'bcryptjs';
 @Injectable()
 export class FilesUploadService {
 
-   private readonly MAX_STORAGE = 15; // GB
-   constructor( @InjectRepository(Folder)
-      private folderRepo: Repository<Folder>,
-      @InjectRepository(Files)
-      private fileRepo: Repository<Files>,
-       @InjectRepository(User)
-      private userRepo: Repository<User>,
-    ){}
+  private readonly MAX_STORAGE = 15; // GB
+  constructor(@InjectRepository(Folder)
+  private folderRepo: Repository<Folder>,
+    @InjectRepository(Files)
+    private fileRepo: Repository<Files>,
+    @InjectRepository(User)
+    private userRepo: Repository<User>,
+  ) { }
 
   async importImage(
-  name,
-  sizeInBytes,
+    name,
+    sizeInBytes,
     path,
-  folderId,
-  type,
-  userId) {
-    try{
+    folderId,
+    type,
+    userId) {
+    try {
 
-    const folder = await this.folderRepo.findOne({ where: { id: folderId } });
-    if (!folder) throw new NotFoundException('Folder not found');
-    const user = await this.userRepo.findOne({ where: { id: userId } });
-    if (!user) throw new NotFoundException('User not found');
+      const folder = await this.folderRepo.findOne({ where: { id: folderId } });
+      if (!folder) throw new NotFoundException('Folder not found');
+      const user = await this.userRepo.findOne({ where: { id: userId } });
+      if (!user) throw new NotFoundException('User not found');
       const used = await this.getUsedStorage(user.id);
       console.log(sizeInBytes)
       console.log(used.usedGB)
-    //const sizeInMB = sizeInBytes / (1024 * 1024);
-   // console.log(`Used storage: ${used} MB, File size: ${sizeInMB} MB`);
-    const newTotal = used.usedGB + bytesToGB(sizeInBytes);
+      //const sizeInMB = sizeInBytes / (1024 * 1024);
+      // console.log(`Used storage: ${used} MB, File size: ${sizeInMB} MB`);
+      const newTotal = used.usedGB + bytesToGB(sizeInBytes);
 
-     if (newTotal > this.MAX_STORAGE) {
-    fs.unlinkSync(path); 
-    throw new Error('Not enough storage space');
-  }
+      if (newTotal > this.MAX_STORAGE) {
+        fs.unlinkSync(path);
+        throw new Error('Not enough storage space');
+      }
 
-    const file =await this.fileRepo.create({
-    name,
-    size:sizeInBytes,                        //size: parseFloat(sizeInMB.toFixed(2)), // store size as float
-    type,
-    path,
-    folder,
-    user
-  });
+      const file = await this.fileRepo.create({
+        name,
+        size: sizeInBytes,                        //size: parseFloat(sizeInMB.toFixed(2)), // store size as float
+        type,
+        path,
+        folder,
+        user
+      });
 
-   const savedFile=await this.fileRepo.save(file);
-   
+      const savedFile = await this.fileRepo.save(file);
+
       return {
         statusCode: 201,
         message: 'Image imported successfully',
@@ -68,9 +68,9 @@ export class FilesUploadService {
       };
 
 
-    }catch (error) {
-     
-      throw new Error('Failed to import image: '+error.message);
+    } catch (error) {
+
+      throw new Error('Failed to import image: ' + error.message);
     }
 
   }
@@ -78,437 +78,435 @@ export class FilesUploadService {
 
 
   async importPdf(
-  name,
-  sizeInBytes,
-    path,
-  folderId,
-  type,
-  userId) {
-    try{
-
-    const folder = await this.folderRepo.findOne({ where: { id: folderId } });
-    if (!folder) throw new NotFoundException('Folder not found');
-    const user = await this.userRepo.findOne({ where: { id: userId } });
-    if (!user) throw new NotFoundException('User not found');
-   
-      const used = await this.getUsedStorage(user.id);
-    //const sizeInMB = sizeInBytes / (1024 * 1024);
-   // console.log(`Used storage: ${used} MB, File size: ${sizeInMB} MB`);
-    const newTotal = used.usedGB + bytesToGB(sizeInBytes);
-
-     if (newTotal > this.MAX_STORAGE) {
-    fs.unlinkSync(path); 
-    throw new Error('Not enough storage space');
-  }
-
-    const file =await this.fileRepo.create({
     name,
-    size: sizeInBytes, // store size as float
-    type,
+    sizeInBytes,
     path,
-    folder,
-    user
-  });
+    folderId,
+    type,
+    userId) {
+    try {
 
-   const savedFile=await this.fileRepo.save(file);
+      const folder = await this.folderRepo.findOne({ where: { id: folderId } });
+      if (!folder) throw new NotFoundException('Folder not found');
+      const user = await this.userRepo.findOne({ where: { id: userId } });
+      if (!user) throw new NotFoundException('User not found');
 
-    return {
+      const used = await this.getUsedStorage(user.id);
+      //const sizeInMB = sizeInBytes / (1024 * 1024);
+      // console.log(`Used storage: ${used} MB, File size: ${sizeInMB} MB`);
+      const newTotal = used.usedGB + bytesToGB(sizeInBytes);
+
+      if (newTotal > this.MAX_STORAGE) {
+        fs.unlinkSync(path);
+        throw new Error('Not enough storage space');
+      }
+
+      const file = await this.fileRepo.create({
+        name,
+        size: sizeInBytes, // store size as float
+        type,
+        path,
+        folder,
+        user
+      });
+
+      const savedFile = await this.fileRepo.save(file);
+
+      return {
         statusCode: 201,
         message: 'Pdf imported successfully',
         data: savedFile
       };
 
 
-    }catch (error) {
-     
-      throw new Error('Failed to import pdf: '+error.message);
+    } catch (error) {
+
+      throw new Error('Failed to import pdf: ' + error.message);
     }
 
   }
 
 
   async importNote(
-  name,
-  sizeInBytes,
-    path,
-  folderId,
-  type,
-  userId) {
-    try{
-
-    const folder = await this.folderRepo.findOne({ where: { id: folderId } });
-    if (!folder) throw new NotFoundException('Folder not found');
-    const user = await this.userRepo.findOne({ where: { id: userId } });
-    if (!user) throw new NotFoundException('User not found');
-      const used = await this.getUsedStorage(user.id);
-    // const sizeInMB = sizeInBytes / (1024 * 1024);
-    //console.log(`Used storage: ${used} MB, File size: ${sizeInMB} MB`);
-    const newTotal = used.usedGB + bytesToGB(sizeInBytes);
-
-     if (newTotal > this.MAX_STORAGE) {
-    fs.unlinkSync(path); 
-    throw new Error('Not enough storage space');
-  }
-    const file =await this.fileRepo.create({
     name,
-    size:sizeInBytes,  // store size as float
-    type,
+    sizeInBytes,
     path,
-    folder,
-    user
-  });
+    folderId,
+    type,
+    userId) {
+    try {
 
-   const savedFile=await this.fileRepo.save(file);
-    return {
+      const folder = await this.folderRepo.findOne({ where: { id: folderId } });
+      if (!folder) throw new NotFoundException('Folder not found');
+      const user = await this.userRepo.findOne({ where: { id: userId } });
+      if (!user) throw new NotFoundException('User not found');
+      const used = await this.getUsedStorage(user.id);
+      // const sizeInMB = sizeInBytes / (1024 * 1024);
+      //console.log(`Used storage: ${used} MB, File size: ${sizeInMB} MB`);
+      const newTotal = used.usedGB + bytesToGB(sizeInBytes);
+
+      if (newTotal > this.MAX_STORAGE) {
+        fs.unlinkSync(path);
+        throw new Error('Not enough storage space');
+      }
+      const file = await this.fileRepo.create({
+        name,
+        size: sizeInBytes,  // store size as float
+        type,
+        path,
+        folder,
+        user
+      });
+
+      const savedFile = await this.fileRepo.save(file);
+      return {
         statusCode: 201,
         message: 'Note imported successfully',
         data: savedFile
       };
 
 
-    }catch (error) {
-     
-      throw new Error('Failed to add note: '+error.message);
+    } catch (error) {
+
+      throw new Error('Failed to add note: ' + error.message);
     }
 
   }
 
-  
+
 
 
 
   async getUsedStorage(id) {
-  const MAX_BYTES = 15 * 1024 * 1024 * 1024; // 15 GB in bytes
+    const MAX_BYTES = 15 * 1024 * 1024 * 1024; // 15 GB in bytes
 
-  const files = await this.fileRepo.find({where:{user:{id:id}}}); // Assuming user ID is 1 for this example
-  // const totalSizeInMB = files.reduce((sum, file) => sum + file.size, 0);
-  // return totalSizeInMB; // size in MB
+    const files = await this.fileRepo.find({ where: { user: { id: id } } }); 
 
-  const totalUsedBytes = files.reduce((sum, f) => sum + Number(f.size), 0);
-  const remainingBytes = MAX_BYTES - totalUsedBytes;
-  //console.log(Number((bytesToGB(totalUsedBytes)).toFixed(2)))
-   return {
-    totalStorageGB: 15,
-    usedGB: Number((bytesToGB(totalUsedBytes)).toFixed(4)),
-    availableGB: Number((bytesToGB(remainingBytes)).toFixed(4)),
-  };
-}
+    const totalUsedBytes = files.reduce((sum, f) => sum + Number(f.size), 0);
+    const remainingBytes = MAX_BYTES - totalUsedBytes;
+
+    return {
+      totalStorageGB: 15,
+      usedGB: Number((bytesToGB(totalUsedBytes)).toFixed(4)),
+      availableGB: Number((bytesToGB(remainingBytes)).toFixed(4)),
+    };
+  }
 
 
-async renameFile(fileId: number, newName: string) {
-  try{
+  async renameFile(fileId: number, newName: string) {
+    try {
 
       const file = await this.fileRepo.findOne({ where: { id: fileId } });
-  if (!file) {
-    throw new NotFoundException('File not found');
-  }
-  // const ext = extname(file?.originalname);
- const  newFileName=newName+file.type;
-  const oldPath = file.path;
-  const newPath = oldPath.replace(file.name, newFileName);
+      if (!file) {
+        throw new NotFoundException('File not found');
+      }
+      
+      const newFileName = newName + file.type;
+      const oldPath = file.path;
+      const newPath = oldPath.replace(file.name, newFileName);
 
-  console.log(`Renaming file from ${oldPath} to ${newPath}`);
+      console.log(`Renaming file from ${oldPath} to ${newPath}`);
 
-  // Rename file on disk
-  fs.renameSync(oldPath, newPath);
+     
+      fs.renameSync(oldPath, newPath);
 
-  // Update DB
-  file.name = newFileName;
-  file.path = newPath;
-  const savedFile=await this.fileRepo.save(file);
-     return{
+    
+      file.name = newFileName;
+      file.path = newPath;
+      const savedFile = await this.fileRepo.save(file);
+      return {
         statusCode: 200,
         message: 'Rename successful',
-        data:savedFile
-        
+        data: savedFile
+
       };
 
-  }catch(error){
-    throw new InternalServerErrorException('Rename error: '+error.message)
+    } catch (error) {
+      throw new InternalServerErrorException('Rename error: ' + error.message)
+    }
+
   }
 
-}
+  async copyFileToFolder(fileId: number, targetFolderId: number) {
+    try {
+      const file = await this.fileRepo.findOne({ where: { id: fileId }, relations: ['folder'] });
+      if (!file) {
+        throw new NotFoundException('File not found');
+      }
+      const targetFolder = await this.folderRepo.findOne({ where: { id: targetFolderId } });
+      if (!targetFolder) {
+        throw new NotFoundException('Target folder not found');
+      }
 
-async copyFileToFolder(fileId: number, targetFolderId: number) {
-  try{
-  const file = await this.fileRepo.findOne({ where: { id: fileId }, relations: ['folder'] });
-  if (!file) {
-    throw new NotFoundException('File not found');
-  }
-  const targetFolder = await this.folderRepo.findOne({ where: { id: targetFolderId } });
-  if (!targetFolder) {
-    throw new NotFoundException('Target folder not found');
-  }
-
-  file.folder = targetFolder;
-  const savedFile=await this.fileRepo.save(file);
-    return{
+      file.folder = targetFolder;
+      const savedFile = await this.fileRepo.save(file);
+      return {
         statusCode: 201,
         message: 'Make a copy of file successfully',
-        data:savedFile
-        
+        data: savedFile
+
       };
-  }catch(error){
-    throw new InternalServerErrorException('Failed to move file: ' + error.message);
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to move file: ' + error.message);
+    }
+
   }
+
+
+  async duplicateFile(fileId: number) {
+    try {
+      const file = await this.fileRepo.findOne({ where: { id: fileId }, relations: ['folder', 'user'] });
+      if (!file) {
+        throw new NotFoundException('File not found');
+      }
+
+      const ext = path.extname(file.name);
+      const base = path.basename(file.name, ext);
+      const newName = `${base}_copy${ext}`;
+      const newPath = file.path.replace(file.name, newName);
+
  
-}
+      fs.copyFileSync(file.path, newPath);
 
+   
+      const duplicated = this.fileRepo.create({
+        name: newName,
+        type: file.type,
+        size: file.size,
+        path: newPath,
+        user: file.user,
+        folder: file.folder,
+      });
 
-async duplicateFile(fileId: number) {
- try{
-   const file = await this.fileRepo.findOne({ where: { id: fileId }, relations: ['folder', 'user'] });
-  if (!file) {
-    throw new NotFoundException('File not found');
-  }
-
-  const ext = path.extname(file.name);
-  const base = path.basename(file.name, ext);
-  const newName = `${base}_copy${ext}`;
-  const newPath = file.path.replace(file.name, newName);
-
-  // Copy file on disk
-  fs.copyFileSync(file.path, newPath);
-
-  // Save new DB entry
-  const duplicated = this.fileRepo.create({
-    name: newName,
-    type: file.type,
-    size: file.size,
-    path: newPath,
-    user: file.user,
-    folder: file.folder,
-  });
-
-  const savedFile=await this.fileRepo.save(duplicated);
-    return{
+      const savedFile = await this.fileRepo.save(duplicated);
+      return {
         statusCode: 201,
         message: 'Make a duplicate file successfully',
-        data:savedFile
-        
+        data: savedFile
+
       };
- }catch(error){
-  throw new InternalServerErrorException('File duplicate failed: '+error.message)
- }
-}
-
-
-async makeFavorite(fileId: number,userId) {
-  try{
-
-      const file = await this.fileRepo.findOne({ where: { id: fileId ,user: { id: userId }} });
-  if (!file) {
-    throw new NotFoundException('File not found');
+    } catch (error) {
+      throw new InternalServerErrorException('File duplicate failed: ' + error.message)
+    }
   }
 
-  file.isFavorite=true;
 
-  const savedFile= await this.fileRepo.save(file);
-   return{
+  async makeFavorite(fileId: number, userId) {
+    try {
+
+      const file = await this.fileRepo.findOne({ where: { id: fileId, user: { id: userId } } });
+      if (!file) {
+        throw new NotFoundException('File not found');
+      }
+
+      file.isFavorite = true;
+
+      const savedFile = await this.fileRepo.save(file);
+      return {
         statusCode: 200,
         message: 'Make the file favorite successfully',
-        data:savedFile
-        
+        data: savedFile
+
       };
-  }catch(error){
-    throw new InternalServerErrorException('Make a file favorite error:'+error.message);
+    } catch (error) {
+      throw new InternalServerErrorException('Make a file favorite error:' + error.message);
+    }
+
   }
 
-}
 
+  async makeUnFavorite(fileId: number, userId) {
+    try {
 
-async makeUnFavorite(fileId: number,userId) {
-  try{
+      const file = await this.fileRepo.findOne({ where: { id: fileId, user: { id: userId } } });
+      if (!file) {
+        throw new NotFoundException('File not found');
+      }
 
-      const file = await this.fileRepo.findOne({ where: { id: fileId ,user: { id: userId }} });
-  if (!file) {
-    throw new NotFoundException('File not found');
-  }
+      file.isFavorite = false;
 
-  file.isFavorite=false;
-
-  const savedFile= await this.fileRepo.save(file);
-   return{
+      const savedFile = await this.fileRepo.save(file);
+      return {
         statusCode: 200,
         message: 'Make the file favorite successfully',
-        data:savedFile
-        
+        data: savedFile
+
       };
-  }catch(error){
-    throw new InternalServerErrorException('Make a file favorite error:'+error.message);
+    } catch (error) {
+      throw new InternalServerErrorException('Make a file favorite error:' + error.message);
+    }
+
   }
 
-}
 
 
-
-  async findFavoriteFiles(searchTerm,userId) {
-    try{
+  async findFavoriteFiles(searchTerm, userId) {
+    try {
       const user = await this.userRepo.findOne({ where: { id: userId } });
-      if (!user) throw new NotFoundException('User not found'); 
+      if (!user) throw new NotFoundException('User not found');
 
-     // const files = await this.fileRepo.find({ where: { user: { id: userId }, isFavorite: true } });
-           const qb= await this.fileRepo.createQueryBuilder('files')
-                 .select('files.id','id')
-                .addSelect('files.name','name')
-                .addSelect('files.created_at','created_at')
-                .leftJoin('files.user','user')
-                .where('user.id = :userId', { userId:user.id })
-                .andWhere('files.isFavorite = :status', { status: true });
+      // const files = await this.fileRepo.find({ where: { user: { id: userId }, isFavorite: true } });
+      const qb = await this.fileRepo.createQueryBuilder('files')
+        .select('files.id', 'id')
+        .addSelect('files.name', 'name')
+        .addSelect('files.created_at', 'created_at')
+        .leftJoin('files.user', 'user')
+        .where('user.id = :userId', { userId: user.id })
+        .andWhere('files.isFavorite = :status', { status: true });
 
 
-                if(searchTerm){
-                  qb.andWhere('files.name =:searchTerm',{searchTerm})
-                }
-               
-             const files=await qb.getRawMany();
+      if (searchTerm) {
+        qb.andWhere('files.name =:searchTerm', { searchTerm })
+      }
+
+      const files = await qb.getRawMany();
       return {
         statusCode: 200,
         message: 'Favorite files retrieved successfully',
         data: files
       };
-      
-    }catch(error){
-      throw new InternalServerErrorException('Favorite files retrieved error: '+error.message);
+
+    } catch (error) {
+      throw new InternalServerErrorException('Favorite files retrieved error: ' + error.message);
     }
   }
 
 
 
-  async findAllPdfs(searchTerm,req) {
+  async findAllPdfs(searchTerm, req) {
 
-    try{
+    try {
 
-const allowedTypes = [
-  '.pdf'
-];
- const user = await this.userRepo.findOne({ where: { id: req.user.sub } });
-    if (!user) throw new NotFoundException('User not found');
-
-    
-      const qb= await this.fileRepo.createQueryBuilder('files')
-                 .select('files.id','id')
-                .addSelect('files.name','name')
-                .addSelect('files.created_at','created_at')
-                .leftJoin('files.user','user')
-                .where('user.id = :userId', { userId:user.id })
-                .andWhere('files.type IN (:...allowedTypes)', { allowedTypes })
-                .andWhere('files.isPrivate = :status', { status: false });
+      const allowedTypes = [
+        '.pdf'
+      ];
+      const user = await this.userRepo.findOne({ where: { id: req.user.sub } });
+      if (!user) throw new NotFoundException('User not found');
 
 
-                if(searchTerm){
-                  qb.andWhere('files.name =:searchTerm',{searchTerm})
-                }
-               
-             const notes=await qb.getRawMany();
+      const qb = await this.fileRepo.createQueryBuilder('files')
+        .select('files.id', 'id')
+        .addSelect('files.name', 'name')
+        .addSelect('files.created_at', 'created_at')
+        .leftJoin('files.user', 'user')
+        .where('user.id = :userId', { userId: user.id })
+        .andWhere('files.type IN (:...allowedTypes)', { allowedTypes })
+        .andWhere('files.isPrivate = :status', { status: false });
 
-    
-       return {
+
+      if (searchTerm) {
+        qb.andWhere('files.name =:searchTerm', { searchTerm })
+      }
+
+      const notes = await qb.getRawMany();
+
+
+      return {
         statusCode: 200,
         message: 'Pdfs retrieved successfully',
         data: notes
       };
 
 
-    }catch(error){
-      throw new InternalServerErrorException("Pdfs retrieved error: "+error.message)
+    } catch (error) {
+      throw new InternalServerErrorException("Pdfs retrieved error: " + error.message)
     }
-   
+
   }
 
-  
-  async findAllImages(searchTerm,req) {
 
-    try{
+  async findAllImages(searchTerm, req) {
 
-  const allowedTypes = [
-  '.jpeg',
-  '.jpg',
-  '.png',
-  '.gif',
-  '.bmp',
-  '.webp'
-];
-console.log(req.user.sub);
- const user = await this.userRepo.findOne({ where: { id: req.user.sub } });
-    if (!user) throw new NotFoundException('User not found');
-    //console.log(user);
+    try {
 
-    
-      const qb= await this.fileRepo.createQueryBuilder('files')
-                 .select('files.id','id')
-                .addSelect('files.name','name')
-                .addSelect('files.created_at','created_at')
-                .leftJoin('files.user','user')
-                .where('user.id = :userId', { userId:user.id })
-                .andWhere('files.type IN (:...allowedTypes)', { allowedTypes })
-                .andWhere('files.isPrivate = :status', { status: false });
+      const allowedTypes = [
+        '.jpeg',
+        '.jpg',
+        '.png',
+        '.gif',
+        '.bmp',
+        '.webp'
+      ];
+      console.log(req.user.sub);
+      const user = await this.userRepo.findOne({ where: { id: req.user.sub } });
+      if (!user) throw new NotFoundException('User not found');
+      //console.log(user);
 
 
-                if(searchTerm){
-                  qb.andWhere('files.name =:searchTerm',{searchTerm})
-                }
-               
-             const images=await qb.getRawMany();
-            // console.log(images);
+      const qb = await this.fileRepo.createQueryBuilder('files')
+        .select('files.id', 'id')
+        .addSelect('files.name', 'name')
+        .addSelect('files.created_at', 'created_at')
+        .leftJoin('files.user', 'user')
+        .where('user.id = :userId', { userId: user.id })
+        .andWhere('files.type IN (:...allowedTypes)', { allowedTypes })
+        .andWhere('files.isPrivate = :status', { status: false });
 
-    
-       return {
+
+      if (searchTerm) {
+        qb.andWhere('files.name =:searchTerm', { searchTerm })
+      }
+
+      const images = await qb.getRawMany();
+      // console.log(images);
+
+
+      return {
         statusCode: 200,
         message: 'Images retrieved successfully',
         data: images
       };
 
 
-    }catch(error){
-      throw new InternalServerErrorException("Images retrieved error: "+error.message)
+    } catch (error) {
+      throw new InternalServerErrorException("Images retrieved error: " + error.message)
     }
-   
+
   }
 
 
-  
-  async findAllNotes(searchTerm,req) {
 
-    try{
+  async findAllNotes(searchTerm, req) {
 
-       const allowedTypes = [
-  'application/msword',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  'text/plain','.docx','.doc'
-];
- const user = await this.userRepo.findOne({ where: { id: req.user.sub } });
-    if (!user) throw new NotFoundException('User not found');
+    try {
 
-    
-      const qb= await this.fileRepo.createQueryBuilder('files')
-                 .select('files.id','id')
-                .addSelect('files.name','name')
-                .addSelect('files.created_at','created_at')
-                .leftJoin('files.user','user')
-                .where('user.id = :userId', { userId:user.id })
-                .andWhere('files.type IN (:...allowedTypes)', { allowedTypes })
-                .andWhere('files.isPrivate = :status', { status: false });
+      const allowedTypes = [
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'text/plain', '.docx', '.doc'
+      ];
+      const user = await this.userRepo.findOne({ where: { id: req.user.sub } });
+      if (!user) throw new NotFoundException('User not found');
 
 
-                if(searchTerm){
-                  qb.andWhere('files.name =:searchTerm',{searchTerm})
-                }
-               
-             const notes=await qb.getRawMany();
+      const qb = await this.fileRepo.createQueryBuilder('files')
+        .select('files.id', 'id')
+        .addSelect('files.name', 'name')
+        .addSelect('files.created_at', 'created_at')
+        .leftJoin('files.user', 'user')
+        .where('user.id = :userId', { userId: user.id })
+        .andWhere('files.type IN (:...allowedTypes)', { allowedTypes })
+        .andWhere('files.isPrivate = :status', { status: false });
 
-    
-       return {
+
+      if (searchTerm) {
+        qb.andWhere('files.name =:searchTerm', { searchTerm })
+      }
+
+      const notes = await qb.getRawMany();
+
+
+      return {
         statusCode: 200,
         message: 'Notes retrieved successfully',
         data: notes
       };
 
 
-    }catch(error){
-      throw new InternalServerErrorException("All notes retrieved error: "+error.message)
+    } catch (error) {
+      throw new InternalServerErrorException("All notes retrieved error: " + error.message)
     }
-   
+
   }
 
 
@@ -520,18 +518,18 @@ console.log(req.user.sub);
     return `This action updates a #${id} filesUpload`;
   }
 
-  async makeFilePrivate(fileId,pin,userId) {
-    try{ 
+  async makeFilePrivate(fileId, pin, userId) {
+    try {
       const file = await this.fileRepo.findOne({ where: { id: fileId } });
       if (!file) {
         throw new NotFoundException('File not found');
       }
       const user = await this.userRepo.findOne({ where: { id: userId } });
-      if (!user) throw new NotFoundException('User not found'); 
-       const isValid=await bcrypt.compare(pin,user.pin_code);
-            if(!isValid){
-               throw new UnauthorizedException('Invalid credentials');
-            }
+      if (!user) throw new NotFoundException('User not found');
+      const isValid = await bcrypt.compare(pin, user.pin_code);
+      if (!isValid) {
+        throw new UnauthorizedException('Invalid credentials');
+      }
 
       file.isPrivate = true;
       const savedFile = await this.fileRepo.save(file);
@@ -540,22 +538,22 @@ console.log(req.user.sub);
         message: 'File made private successfully',
         data: savedFile
       };
-      
-      
-    }catch(error){
-      throw new InternalServerErrorException('Make file private error: '+error.message);
+
+
+    } catch (error) {
+      throw new InternalServerErrorException('Make file private error: ' + error.message);
     }
   }
 
 
-  async findPrivateFiles(pin,userId) {
-    try{
+  async findPrivateFiles(pin, userId) {
+    try {
       const user = await this.userRepo.findOne({ where: { id: userId } });
-      if (!user) throw new NotFoundException('User not found'); 
-       const isValid=await bcrypt.compare(pin,user.pin_code);
-            if(!isValid){
-               throw new UnauthorizedException('Invalid credentials');
-            }
+      if (!user) throw new NotFoundException('User not found');
+      const isValid = await bcrypt.compare(pin, user.pin_code);
+      if (!isValid) {
+        throw new UnauthorizedException('Invalid credentials');
+      }
 
       const files = await this.fileRepo.find({ where: { user: { id: userId }, isPrivate: true } });
       return {
@@ -563,69 +561,69 @@ console.log(req.user.sub);
         message: 'Private files retrieved successfully',
         data: files
       };
-      
-    }catch(error){
-      throw new InternalServerErrorException('Find private files error: '+error.message);
+
+    } catch (error) {
+      throw new InternalServerErrorException('Find private files error: ' + error.message);
     }
   }
 
-async  remove(id: number) {
+  async remove(id: number) {
 
-  try{
-  const file = await this.fileRepo.findOne({ where: { id: id } });
-  if (!file) {
-    throw new NotFoundException('File not found');
-  }
-  await this.fileRepo.remove(file);
-  fs.unlinkSync(file.path); 
-  return{
+    try {
+      const file = await this.fileRepo.findOne({ where: { id: id } });
+      if (!file) {
+        throw new NotFoundException('File not found');
+      }
+      await this.fileRepo.remove(file);
+      fs.unlinkSync(file.path);
+      return {
         statusCode: 200,
         message: 'File deleted successfully',
-        
+
       };
-  }
-  catch(error){
-    throw new InternalServerErrorException("File deletion failed: "+error.message);
-  }
-
-  }
-
-async dateFilteredFiles(req,parsedDate?: Date, ) {
-
-  try{
-    const user = await this.userRepo.findOne({ where: { id: req.user.sub } });
-    if (!user) throw new NotFoundException('User not found');
-
-    let dateWhereClause = {};
-
-    if (parsedDate) {
-      const startOfDay = new Date(parsedDate);
-      startOfDay.setHours(0, 0, 0, 0);
-      const endOfDay = new Date(parsedDate);
-      endOfDay.setHours(23, 59, 59, 999);
-      dateWhereClause = { created_at: Between(startOfDay, endOfDay) };
+    }
+    catch (error) {
+      throw new InternalServerErrorException("File deletion failed: " + error.message);
     }
 
-    const qb = await this.fileRepo.createQueryBuilder('files')
-      .select('files.id', 'id')
-      .addSelect('files.name', 'name')
-      .addSelect('files.created_at', 'created_at')
-      .leftJoin('files.user', 'user')
-      .where('user.id = :userId', { userId: user.id })
-       .andWhere('files.isPrivate = :status', { status: false })
-      .andWhere(dateWhereClause)
-      .getRawMany();
-
-    return {
-      statusCode: 200,
-      message: 'Files retrieved successfully within the date range',
-      data: qb
-    };
-
-  }catch(error){
-    throw new InternalServerErrorException('Recent files retrieve error: '+error.message)
   }
-}
+
+  async dateFilteredFiles(req, parsedDate?: Date,) {
+
+    try {
+      const user = await this.userRepo.findOne({ where: { id: req.user.sub } });
+      if (!user) throw new NotFoundException('User not found');
+
+      let dateWhereClause = {};
+
+      if (parsedDate) {
+        const startOfDay = new Date(parsedDate);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(parsedDate);
+        endOfDay.setHours(23, 59, 59, 999);
+        dateWhereClause = { created_at: Between(startOfDay, endOfDay) };
+      }
+
+      const qb = await this.fileRepo.createQueryBuilder('files')
+        .select('files.id', 'id')
+        .addSelect('files.name', 'name')
+        .addSelect('files.created_at', 'created_at')
+        .leftJoin('files.user', 'user')
+        .where('user.id = :userId', { userId: user.id })
+        .andWhere('files.isPrivate = :status', { status: false })
+        .andWhere(dateWhereClause)
+        .getRawMany();
+
+      return {
+        statusCode: 200,
+        message: 'Files retrieved successfully within the date range',
+        data: qb
+      };
+
+    } catch (error) {
+      throw new InternalServerErrorException('Recent files retrieve error: ' + error.message)
+    }
+  }
 
 
 }

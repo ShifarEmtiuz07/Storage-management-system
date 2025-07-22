@@ -9,6 +9,8 @@ import { FoldersModule } from './Modules/folders/folders.module';
 import { FilesUploadModule } from './Modules/files-upload/files-upload.module';
 import { HomeModule } from './Modules/home/home.module';
 import { GoogleAuthModule } from './Modules/auth/google-auth.module';
+import { FavoritesModule } from './Modules/favorites/favorites.module';
+import { CalendarModule } from './Modules/calendar/calendar.module';
 
 @Module({
   imports: [ 
@@ -19,7 +21,10 @@ import { GoogleAuthModule } from './Modules/auth/google-auth.module';
     FoldersModule,
     FilesUploadModule,
     HomeModule,
-    GoogleAuthModule
+    GoogleAuthModule,
+    FavoritesModule,
+    CalendarModule,
+    
     ],
   controllers: [AppController],
   providers: [AppService],
