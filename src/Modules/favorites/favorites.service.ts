@@ -4,7 +4,7 @@ import { UpdateFavoriteDto } from './dto/update-favorite.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Folder } from '../folders/entities/folder.entity';
 import { Repository } from 'typeorm';
-import { Files } from '../files-upload/entities/files-upload.entity';
+import { Files } from '../files/entities/files-upload.entity';
 import { User } from '../users/entities/user.entity';
 
 @Injectable()

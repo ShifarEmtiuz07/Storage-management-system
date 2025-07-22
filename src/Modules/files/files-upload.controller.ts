@@ -142,31 +142,6 @@ export class FilesUploadController {
   }
 
 
-  @UseGuards(AuthGuard)
-  @Post('favorite/:id')
-  makeFavorite(@Param ('id') id:string, @Req() req) {
-    
-    return this.filesUploadService.makeFavorite(+id, req.user.sub);
-  }
-
-  
-  @UseGuards(AuthGuard)
-  @Post('unfavorite/:id')
-  makeUnFavorite(@Param ('id') id:string, @Req() req) {
-    
-    return this.filesUploadService.makeUnFavorite(+id, req.user.sub);
-  }
-
-
-  
-  @UseGuards(AuthGuard)
-  @Get('favorite-files')
-  findFavoriteFiles(@Query('searchTerm') searchTerm:string, @Req() req) {
-    
-    return this.filesUploadService.findFavoriteFiles(searchTerm,req.user.sub);
-  }
-
-
 
   @Delete(':id')
   remove(@Param('id') id: string) {
@@ -206,29 +181,6 @@ export class FilesUploadController {
     
     return this.filesUploadService.findPrivateFiles(body.pin,req.user.sub);
   }
-
-    @UseGuards(AuthGuard)
-  @Get('date-filtered-files')
- getRecentFiles(@Req() req,   
-  @Query('date') date?: string,
-) {
-
-        const parseDate = (dateString: string | undefined): Date | undefined => {
-      if (!dateString) return undefined;
-      const date = new Date(dateString);
-
-      if (isNaN(date.getTime()))
-        throw new BadRequestException(`Invalid date format: ${dateString}`);
-      return date;
-    };
-
-    const parsedDate = parseDate(date);
-    
-
-  return this.filesUploadService.dateFilteredFiles(req, parsedDate);
-}
-
-
 
 
   @Get(':id')

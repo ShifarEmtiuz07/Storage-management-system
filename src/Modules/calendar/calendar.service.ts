@@ -4,26 +4,20 @@ import { UpdateCalendarDto } from './dto/update-calendar.dto';
 import { User } from '../users/entities/user.entity';
 import { Between, In, Repository } from 'typeorm';
 import { Folder } from '../folders/entities/folder.entity';
-import { Files } from '../files-upload/entities/files-upload.entity';
+import { Files } from '../files/entities/files-upload.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class CalendarService {
 
 
-
-
-  constructor(@InjectRepository(Folder)
+    constructor(@InjectRepository(Folder)
   private folderRepo: Repository<Folder>,
     @InjectRepository(Files)
     private fileRepo: Repository<Files>,
     @InjectRepository(User)
     private userRepo: Repository<User>,
   ) { }
-
-
-
-
 
       async dateFilteredFiles(req, parsedDate ?: Date,) {
 

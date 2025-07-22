@@ -1,5 +1,5 @@
 import { Exclude } from 'class-transformer';
-import { Files } from 'src/Modules/files-upload/entities/files-upload.entity';
+import { Files } from 'src/Modules/files/entities/files-upload.entity';
 import { Folder } from 'src/Modules/folders/entities/folder.entity';
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 

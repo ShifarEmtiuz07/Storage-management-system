@@ -4,7 +4,7 @@ import { UsersController } from './users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Folder } from '../folders/entities/folder.entity';
-import { Files } from '../files-upload/entities/files-upload.entity';
+import { Files } from '../files/entities/files-upload.entity';
 
 
 @Module({

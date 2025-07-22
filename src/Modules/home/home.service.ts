@@ -4,9 +4,9 @@ import { UpdateHomeDto } from './dto/update-home.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Repository } from 'typeorm';
 import { Folder } from '../folders/entities/folder.entity';
-import { Files } from '../files-upload/entities/files-upload.entity';
+import { Files } from '../files/entities/files-upload.entity';
 import { User } from '../users/entities/user.entity';
-import { FilesUploadService } from '../files-upload/files-upload.service';
+import { FilesUploadService } from '../files/files-upload.service';
 
 
 @Injectable()

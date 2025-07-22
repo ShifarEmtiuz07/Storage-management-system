@@ -1,4 +1,4 @@
-import { Files } from "src/Modules/files-upload/entities/files-upload.entity";
+import { Files } from "src/Modules/files/entities/files-upload.entity";
 import { User } from "src/Modules/users/entities/user.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
