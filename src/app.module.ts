@@ -8,6 +8,7 @@ import { AuthModule } from './Modules/auth/auth.module';
 import { FoldersModule } from './Modules/folders/folders.module';
 import { FilesUploadModule } from './Modules/files-upload/files-upload.module';
 import { HomeModule } from './Modules/home/home.module';
+import { GoogleAuthModule } from './Modules/auth/google-auth.module';
 
 @Module({
   imports: [ 
@@ -17,7 +18,8 @@ import { HomeModule } from './Modules/home/home.module';
     AuthModule,
     FoldersModule,
     FilesUploadModule,
-    HomeModule
+    HomeModule,
+    GoogleAuthModule
     ],
   controllers: [AppController],
   providers: [AppService],

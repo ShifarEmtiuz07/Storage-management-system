@@ -7,7 +7,7 @@ export class MailService {
     service: 'gmail',
     auth: {
       user: 'shifarcls@gmail.com',
-      pass: 'nlvt clha kejt jfbi',
+      pass: 'change your app password here',
     },
   });
 

@@ -12,7 +12,7 @@ export class User {
   @Column()
   username: string;
 
-  @Column()  //{unique: true}
+  @Column({unique: true})
   email: string;
 
   @Exclude()
@@ -31,6 +31,9 @@ export class User {
   @Column({ nullable: true })
   userImage: string;
 
+  @Column({ unique: true,nullable:true })
+  googleId: string;
+
   @Column({ nullable: true,type:'boolean' })
    termsConditions?: boolean;
 
@@ -47,10 +50,10 @@ export class User {
   })
   public updated_at: Date;
 
- @OneToMany(()=>Folder,(folder)=>folder.user)
+ @OneToMany(()=>Folder,(folder)=>folder.user,{ cascade: true, onDelete: 'CASCADE' })
  folders:Folder[]
 
-  @OneToMany(()=>Files,(files)=>files.user)
+  @OneToMany(()=>Files,(files)=>files.user,{ cascade: true, onDelete: 'CASCADE' })
  files:Files[]
 
 

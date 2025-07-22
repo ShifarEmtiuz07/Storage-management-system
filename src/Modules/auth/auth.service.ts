@@ -10,6 +10,8 @@ import { PasswordReset } from './entities/password-reset.entity';
 import { MailService } from './mail.service';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { Request, Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -43,6 +45,45 @@ export class AuthService {
 
     
   }
+
+    async logoutUser(req, resp) {
+    const userId=req.user.sub;
+    const user = await this.userRepo.findOne({ where: { id: userId } })
+    if(!user) throw new NotFoundException('User not found')
+
+    resp.cookie('accessToken', '', { maxAge: 0 });
+  
+    return resp.status(200).send({ message: 'Logged out successful' });
+  }
+
+  //   async validateOAuthLogin(profile: any) {
+  //   // Check if user exists, if not create
+  //   let user = await this.userRepo.findOne({where:{email:profile.email}});
+  //   if (!user) {
+  //     user = await this.usersService.createOAuthUser(profile);
+  //   }
+
+  //   const payload = { email: user?.email, sub: user?.id,username: user?.username };  
+  //   return {
+  //     accessToken: this.jwtService.sign(payload),
+  //   };
+  // }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   async forgotPassword(email: string) {
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -95,6 +136,32 @@ async verifyOtp({ email, otp }: VerifyOtpDto) {
 
     return { message: 'Password reset successfully' };
   }
+
+
+
+    async changePassword(dto: ChangePasswordDto,userId) {
+    const { currentPassword, newPassword, confirmPassword } = dto;
+
+    if (newPassword !== confirmPassword)
+      throw new BadRequestException('Passwords do not match');
+
+    const user = await this.userRepo.findOne({ where: { id: userId } });
+  if (!user) throw new NotFoundException('User not found'); 
+
+    const isValid = await bcrypt.compare(currentPassword, user.password_hash);
+  if (!isValid) throw new UnauthorizedException('Invalid password');
+
+    const salt = bcrypt.genSaltSync(10);
+    const password_hash = bcrypt.hashSync(newPassword, salt);
+    await this.userRepo.update( user.id , { password_hash: password_hash });
+
+   
+
+    return { message: 'Password change successfully' };
+  }
+
+
+
 
 async setPin(dto,userId) {  //userId: number, pin: string, password:string
   const user = await this.userRepo.findOne({ where: { id: userId } });

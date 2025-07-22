@@ -11,5 +11,6 @@ import { Files } from '../files-upload/entities/files-upload.entity';
   imports:[TypeOrmModule.forFeature([User,Folder,Files])],
   controllers: [UsersController],
   providers: [UsersService],
+  exports:[UsersService]
 })
 export class UsersModule {}

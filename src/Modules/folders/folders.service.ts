@@ -21,7 +21,7 @@ export class FoldersService {
 async  create(createFolderDto: CreateFolderDto,req) {
     try{
 
-        const user = await this.userRepo.findOne({ where: { id:  req.user.id } });
+        const user = await this.userRepo.findOne({ where: { id:  req.user.sub } });
        if (!user) throw new NotFoundException('User not found');
 
     const folder =await this.folderRepo.create({...createFolderDto,user});
@@ -41,7 +41,7 @@ async  create(createFolderDto: CreateFolderDto,req) {
 async  findAll(searchTerm:string,req) {
     try{
 
-       const user = await this.userRepo.findOne({ where: { id:  req.user.id } });
+       const user = await this.userRepo.findOne({ where: { id:  req.user.sub } });
        if (!user) throw new NotFoundException('User not found');
 
       const qb= await this.folderRepo.createQueryBuilder('folders')
@@ -73,7 +73,7 @@ async  findAll(searchTerm:string,req) {
 async  findOneFolderAllFiles(folderId: number,req) {
      try{
       //console.log(folderId);  
-       const user = await this.userRepo.findOne({ where: { id: req.user.id } });
+       const user = await this.userRepo.findOne({ where: { id: req.user.sub } });
        console.log(user);
     if (!user) throw new NotFoundException('User not found');
 
