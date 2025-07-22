@@ -62,16 +62,13 @@ export class GoogleAuthController {
       
       });
 
-      // Redirect with token
-     // return res.redirect(`http://localhost:5173?token=${token}`);
-     // return res.json({ token });
      return {message:'Sign up successful',access_token:token};
     } catch (err) {
       console.error('Google login failed:', err.response?.data || err.message);
       throw new UnauthorizedException('Google login failed');
     }
 
-    //return this.googleAuthService.loginWithGoogle(code);
+    
   }
 
   

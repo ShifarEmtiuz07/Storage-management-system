@@ -1,98 +1,118 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+Here is your updated and professional `README.md` file for the **Storage Management System** project, including all requested content, cleaned-up credentials, and guidance for managing environment variables securely:
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+---
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+````markdown
+# 📦 Storage Management System
 
-## Description
+A secure and scalable **Storage Management System** built with **NestJS**, featuring Google OAuth 2.0 authentication, PostgreSQL database integration, and JWT-based session management.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+---
 
-## Project setup
+## 🚀 Features
+
+- Google Sign-In (OAuth2.0) integration
+- Secure JWT authentication
+- PostgreSQL support with TypeORM
+- Environment-based configuration management
+- BCrypt password hashing (if applicable)
+- Modular, scalable NestJS architecture
+- File management all feature
+
+---
+
+## 🛠️ Project Setup
+
+### 1. Clone the Repository
 
 ```bash
-$ npm install
-```
+git clone <https://github.com/ShifarEmtiuz07/Storage-management-system>
+cd storage-management-system
+````
 
-## Compile and run the project
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Run tests
+### 2. Install Dependencies
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm install
 ```
 
-## Deployment
+### 3. Create a `.env` File
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Create a `.env` file in the root of your project and add the following environment variables. Replace placeholder values with your actual credentials.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+```env
+# Database Configuration
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=your_postgres_username
+DB_PASSWORD=your_postgres_password
+DB_NAME=storageManagement
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Application Environment
+NODE_ENV=development
+DB_SYNCHRONIZE=true
+
+# Security Config
+BCRYPT_SALT_ROUNDS=12
+JWT_SECRET=your_jwt_secret_key
+JWT_EXPIRES_IN=1d
+
+# Google OAuth Configuration
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_REDIRECT_URI=http://localhost:3000/auth/google/callback
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
 
-## Resources
+---
 
-Check out a few resources that may come in handy when working with NestJS:
+## 🔑 Google OAuth Setup
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+1. Go to the [Google Cloud Console](https://console.developers.google.com/).
+2. Create or select a project.
+3. Set up the **OAuth consent screen**.
+4. Create **OAuth 2.0 credentials**:
 
-## Support
+   * Add your **Redirect URI** (e.g., `http://localhost:3000/auth/google/redirect`).
+   * Copy the generated **Client ID** and **Client Secret** into your `.env` file.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+---
 
-## Stay in touch
+## ✨ OAuth Flow
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+1. Client requests the Google login URL from backend (`/auth/google/url`).
+2. User authenticates via Google and gets redirected with a `code`.
+3. Backend exchanges the code for tokens and retrieves the user's profile.
+4. JWT token is generated and returned to the client.
 
-## License
+---
+🔐 Configuration Note for Google OAuth Integration
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Before using this service for Google Sign-In, please ensure you replace all placeholder values with your actual credentials and configuration:
+
+## client_id: Replace with your Google OAuth 2.0 Client ID from the Google Developer Console.
+
+## client_secret: Replace with your Google OAuth 2.0 Client Secret.
+
+## redirect_uri: Set to the authorized redirect URI configured in your Google Cloud project.
+
+## rootUrl: Set this to the appropriate Google OAuth 2.0 authorization endpoint, typically https://accounts.google.com/o/oauth2/v2/auth.
+
+## jwt_secret: Replace 'change your jwt_secret' with your actual JWT secret key. For security, store this value in an environment variable (e.g., process.env.JWT_SECRET).
+
+---
+
+## 🗃️ Database Setup
+
+This project uses **PostgreSQL** with TypeORM. Connection settings are managed via environment variables.
+
+> Ensure PostgreSQL is running and a database named `storageManagement` is created (or adjust the name in `.env`).
+
+---
+
+## 👨‍💻 Author
+
+Made with ❤️ by \[A. B. M. Shifar Emtiuz]
+
+
+
