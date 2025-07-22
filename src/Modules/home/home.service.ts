@@ -25,7 +25,7 @@ export class HomeService {
  async storageProfile(req){
 
   try{
-          const user = await this.userRepo.findOne({ where: { id:  req.user.id } });
+          const user = await this.userRepo.findOne({ where: { id:  req.user.sub } });
        if (!user) throw new NotFoundException('User not found');
 
 
@@ -51,7 +51,7 @@ export class HomeService {
  async getFoldersWithItems(req) {
    try{
 
-     const user = await this.userRepo.findOne({ where: { id:  req.user.id } });
+     const user = await this.userRepo.findOne({ where: { id:  req.user.sub } });
     
     if (!user) throw new NotFoundException('User not found');
   const folders = await this.folderRepo
@@ -85,7 +85,7 @@ async getRecentFiles(req){
 
   try{
 
-    const user = await this.userRepo.findOne({ where: { id:  req.user.id } });
+    const user = await this.userRepo.findOne({ where: { id:  req.user.sub } });
       //console.log(user);
     
     if (!user) throw new NotFoundException('User not found');
