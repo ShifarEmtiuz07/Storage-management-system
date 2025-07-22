@@ -109,7 +109,7 @@ This project uses **PostgreSQL** with TypeORM. Connection settings are managed v
 
 ## 👨‍💻 Author
 
-Made with ❤️ by \[A. B. M. Shifar Emtiuz]
+Made by A. B. M. Shifar Emtiuz
 
 
 
