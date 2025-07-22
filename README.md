@@ -1,11 +1,6 @@
-Here is your updated and professional `README.md` file for the **Storage Management System** project, including all requested content, cleaned-up credentials, and guidance for managing environment variables securely:
-
----
-
-````markdown
 # 📦 Storage Management System
 
-A secure and scalable **Storage Management System** built with **NestJS**, featuring Google OAuth 2.0 authentication, PostgreSQL database integration, and JWT-based session management.
+A secure and scalable **Storage Management System** built with **NestJS**, featuring Google OAuth 2.0 authentication, PostgreSQL integration, and modular architecture.
 
 ---
 
@@ -17,18 +12,20 @@ A secure and scalable **Storage Management System** built with **NestJS**, featu
 - Environment-based configuration management
 - BCrypt password hashing (if applicable)
 - Modular, scalable NestJS architecture
-- File management all feature
+- Full file management functionality
 
 ---
 
-## 🛠️ Project Setup
+## 🛠 Project Setup
 
 ### 1. Clone the Repository
 
 ```bash
-git clone <https://github.com/ShifarEmtiuz07/Storage-management-system>
+git clone https://github.com/ShifarEmtiuz07/Storage-management-system
 cd storage-management-system
-````
+
+```
+
 
 ### 2. Install Dependencies
 
@@ -90,15 +87,15 @@ GOOGLE_REDIRECT_URI=http://localhost:3000/auth/google/callback
 
 Before using this service for Google Sign-In, please ensure you replace all placeholder values with your actual credentials and configuration:
 
-## client_id: Replace with your Google OAuth 2.0 Client ID from the Google Developer Console.
+** client_id: Replace with your Google OAuth 2.0 Client ID from the Google Developer Console.
 
-## client_secret: Replace with your Google OAuth 2.0 Client Secret.
+** client_secret: Replace with your Google OAuth 2.0 Client Secret.
 
-## redirect_uri: Set to the authorized redirect URI configured in your Google Cloud project.
+** redirect_uri: Set to the authorized redirect URI configured in your Google Cloud project.
 
-## rootUrl: Set this to the appropriate Google OAuth 2.0 authorization endpoint, typically https://accounts.google.com/o/oauth2/v2/auth.
+** rootUrl: Set this to the appropriate Google OAuth 2.0 authorization endpoint, typically https://accounts.google.com/o/oauth2/v2/auth.
 
-## jwt_secret: Replace 'change your jwt_secret' with your actual JWT secret key. For security, store this value in an environment variable (e.g., process.env.JWT_SECRET).
+** jwt_secret: Replace 'change your jwt_secret' with your actual JWT secret key. For security, store this value in an environment variable (e.g., process.env.JWT_SECRET).
 
 ---
 
